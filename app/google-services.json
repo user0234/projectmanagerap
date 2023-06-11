@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "319937553255",
+    "project_id": "projectmangement-tool",
+    "storage_bucket": "projectmangement-tool.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319937553255:android:cf8c86068722b76a61c5c2",
+        "android_client_info": {
+          "package_name": "com.hellow.projectmanagerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "319937553255-b94jtttqpi4c6jpt53ie69md12tivp2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hellow.projectmanagerapp",
+            "certificate_hash": "e400ab3d26f9a1cb92cc12e92c9d8906b583758a"
+          }
+        },
+        {
+          "client_id": "319937553255-ao7o8kdtmvpafderdbksd3ufmjukiter.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIk4uxGcCk4kxPUE0kKIMQvAa3nVKddXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "319937553255-ao7o8kdtmvpafderdbksd3ufmjukiter.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
