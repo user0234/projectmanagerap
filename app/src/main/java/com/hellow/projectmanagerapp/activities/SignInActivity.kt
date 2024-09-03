@@ -1,13 +1,13 @@
 package com.hellow.projectmanagerapp.activities
 
 import android.content.Intent
- import android.os.Bundle
+import android.os.Bundle
 import android.text.TextUtils
- import android.widget.Toast
- import com.google.firebase.auth.FirebaseAuth
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import com.hellow.projectmanagerapp.BuildConfig
 import com.hellow.projectmanagerapp.R
- import com.hellow.projectmanagerapp.databinding.ActivitySignInBinding
+import com.hellow.projectmanagerapp.databinding.ActivitySignInBinding
 import com.hellow.projectmanagerapp.firebase.FirestoreClass
 import com.hellow.projectmanagerapp.model.User
 
@@ -58,7 +58,14 @@ class SignInActivity : BaseActivity() {
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        FirestoreClass().loadUserData(this@SignInActivity)
+                        FirestoreClass().loadUserData(this@SignInActivity) { isSucess, userData ->
+                            if (isSucess) {
+                                signInSuccess(userData!!)
+
+                            } else {
+                                hideProgressDialog()
+                            }
+                        }
                     } else {
                         hideProgressDialog()
                         Toast.makeText(

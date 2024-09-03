@@ -20,7 +20,6 @@ import com.hellow.projectmanagerapp.utils.Constants
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-
     // [START receive_message]
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
 

@@ -78,8 +78,16 @@ class SignUpActivity : BaseActivity() {
                                 firebaseUser.uid, name, registeredEmail
                             )
 
-                            FirestoreClass().registerUser(this@SignUpActivity, user)
+                            FirestoreClass().registerUser(user) {
+                                if (it) {
+                                    userRegisteredSuccess()
+                                } else {
+                                    hideProgressDialog()
+                                }
+                            }
                         } else {
+
+                            hideProgressDialog()
                             Toast.makeText(
                                 this@SignUpActivity,
                                 task.exception!!.message,
@@ -96,14 +104,17 @@ class SignUpActivity : BaseActivity() {
                 showErrorSnackBar("Please enter name.")
                 false
             }
+
             TextUtils.isEmpty(email) -> {
                 showErrorSnackBar("Please enter email.")
                 false
             }
+
             TextUtils.isEmpty(password) -> {
                 showErrorSnackBar("Please enter password.")
                 false
             }
+
             else -> {
                 true
             }

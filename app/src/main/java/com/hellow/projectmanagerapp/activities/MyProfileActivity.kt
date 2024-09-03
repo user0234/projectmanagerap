@@ -6,17 +6,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
- import android.os.Bundle
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
- import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.hellow.projectmanagerapp.R
 import com.hellow.projectmanagerapp.databinding.ActivityMyProfileBinding
- import com.hellow.projectmanagerapp.firebase.FirestoreClass
+import com.hellow.projectmanagerapp.firebase.FirestoreClass
 import com.hellow.projectmanagerapp.model.User
 import com.hellow.projectmanagerapp.utils.Constants
 import java.io.IOException
@@ -31,17 +31,24 @@ class MyProfileActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMyProfileBinding
 
-     override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-       binding = ActivityMyProfileBinding.inflate(layoutInflater)
+        binding = ActivityMyProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupActionBar()
 
-         showProgressDialog(resources.getString(R.string.please_wait))
+        showProgressDialog(resources.getString(R.string.please_wait))
 
-        FirestoreClass().loadUserData(this@MyProfileActivity)
+        FirestoreClass().loadUserData(this@MyProfileActivity) { isSucess, userData ->
+            if (isSucess) {
+                setUserDataInUI(userData!!)
+
+            } else {
+                hideProgressDialog()
+            }
+        }
 
         binding.ivProfileUserImage.setOnClickListener {
 
@@ -159,7 +166,9 @@ class MyProfileActivity : BaseActivity() {
             userHashMap[Constants.NAME] = binding.etName.text.toString()
         }
 
-        if (binding.etMobile.text.toString().isNotEmpty() && binding.etMobile.text.toString() != mUserDetails.mobile.toString()) {
+        if (binding.etMobile.text.toString()
+                .isNotEmpty() && binding.etMobile.text.toString() != mUserDetails.mobile.toString()
+        ) {
             userHashMap[Constants.MOBILE] = binding.etMobile.text.toString()
         }
 
@@ -181,7 +190,7 @@ class MyProfileActivity : BaseActivity() {
         binding.etEmail.setText(user.email)
         binding.etMobile.setText(user.mobile.toString())
 
-        if(mProgressDialog.isShowing){
+        if (mProgressDialog.isShowing) {
             hideProgressDialog()
         }
     }
@@ -190,7 +199,8 @@ class MyProfileActivity : BaseActivity() {
 
         hideProgressDialog()
 
-        Toast.makeText(this@MyProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MyProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT)
+            .show()
 
         setResult(Activity.RESULT_OK)
         finish()

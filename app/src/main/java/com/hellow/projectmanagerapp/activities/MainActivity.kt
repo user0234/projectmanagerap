@@ -24,21 +24,21 @@ import com.hellow.projectmanagerapp.model.Board
 import com.hellow.projectmanagerapp.model.User
 import com.hellow.projectmanagerapp.utils.Constants
 
-class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var mUserName: String
 
     private lateinit var mSharedPreferences: SharedPreferences
 
-    private lateinit var binding:ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
 
-         setContentView(binding.root)
+        setContentView(binding.root)
 
-         setupActionBar()
+        setupActionBar()
 
         binding.navView.setNavigationItemSelectedListener(this)
 
@@ -49,7 +49,14 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
 
         if (tokenUpdated) {
             showProgressDialog(resources.getString(R.string.please_wait))
-            FirestoreClass().loadUserData(this@MainActivity, true)
+            FirestoreClass().loadUserData(this@MainActivity) { isSucess, userData ->
+                if (isSucess) {
+                    updateNavigationUserDetails(userData!!, true)
+
+                } else {
+                    hideProgressDialog()
+                }
+            }
         } else {
 
             FirebaseMessaging.getInstance()
@@ -58,7 +65,7 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
                 }
         }
 
-       binding.appBarMain.fabCreateBoard.setOnClickListener {
+        binding.appBarMain.fabCreateBoard.setOnClickListener {
             val intent = Intent(this@MainActivity, CreateBoardActivity::class.java)
             intent.putExtra(Constants.NAME, mUserName)
             startActivityForResult(intent, CREATE_BOARD_REQUEST_CODE)
@@ -109,7 +116,14 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
         ) {
             showProgressDialog(resources.getString(R.string.please_wait))
 
-            FirestoreClass().loadUserData(this@MainActivity)
+            FirestoreClass().loadUserData(this@MainActivity) { isSucess, userData ->
+                if (isSucess) {
+                    updateNavigationUserDetails(userData!!, false)
+
+                } else {
+                    hideProgressDialog()
+                }
+            }
         } else if (resultCode == Activity.RESULT_OK
             && requestCode == CREATE_BOARD_REQUEST_CODE
         ) {
@@ -132,7 +146,7 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
 
     private fun setupActionBar() {
 
-       setSupportActionBar(binding.appBarMain.toolbarMainActivity)
+        setSupportActionBar(binding.appBarMain.toolbarMainActivity)
         binding.appBarMain.toolbarMainActivity.setNavigationIcon(R.drawable.ic_action_navigation_menu)
 
         binding.appBarMain.toolbarMainActivity.setNavigationOnClickListener {
@@ -173,11 +187,12 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
             FirestoreClass().getBoardsList(this@MainActivity)
         }
 
-        if(mProgressDialog.isShowing){
+        if (mProgressDialog.isShowing) {
             hideProgressDialog()
         }
 
     }
+
     fun populateBoardsListToUI(boardsList: ArrayList<Board>) {
 
 
@@ -186,12 +201,14 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
             binding.appBarMain.mainContentLayout.mainContentXml.visibility = View.VISIBLE
             binding.appBarMain.mainContentLayout.tvNoBoardsAvailable.visibility = View.GONE
 
-            binding.appBarMain.mainContentLayout.rvBoardsList.layoutManager = LinearLayoutManager(this@MainActivity)
+            binding.appBarMain.mainContentLayout.rvBoardsList.layoutManager =
+                LinearLayoutManager(this@MainActivity)
             binding.appBarMain.mainContentLayout.rvBoardsList.setHasFixedSize(true)
 
 
             val adapter = BoardItemsAdapter(this@MainActivity, boardsList)
-            binding.appBarMain.mainContentLayout.rvBoardsList.adapter = adapter // Attach the adapter to the recyclerView.
+            binding.appBarMain.mainContentLayout.rvBoardsList.adapter =
+                adapter // Attach the adapter to the recyclerView.
 
             adapter.setOnClickListener(object :
                 BoardItemsAdapter.OnClickListener {
@@ -209,7 +226,7 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
             binding.appBarMain.mainContentLayout.tvNoBoardsAvailable.visibility = View.VISIBLE
         }
 
-        if(mProgressDialog.isShowing){
+        if (mProgressDialog.isShowing) {
             hideProgressDialog()
         }
     }
@@ -221,7 +238,14 @@ class MainActivity : BaseActivity() , NavigationView.OnNavigationItemSelectedLis
         editor.apply()
 
         showProgressDialog(resources.getString(R.string.please_wait))
-        FirestoreClass().loadUserData(this@MainActivity, true)
+        FirestoreClass().loadUserData(this@MainActivity) { isSucess, userData ->
+            if (isSucess) {
+                updateNavigationUserDetails(userData!!, true)
+
+            } else {
+                hideProgressDialog()
+            }
+        }
     }
 
     companion object {

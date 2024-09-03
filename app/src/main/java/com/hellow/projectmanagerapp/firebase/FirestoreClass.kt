@@ -10,31 +10,36 @@ import com.hellow.projectmanagerapp.activities.*
 import com.hellow.projectmanagerapp.model.Board
 import com.hellow.projectmanagerapp.model.User
 import com.hellow.projectmanagerapp.utils.Constants
+import kotlin.math.truncate
 
 class FirestoreClass {
 
     private val mFireStore = FirebaseFirestore.getInstance()
 
-    fun registerUser(activity: SignUpActivity, userInfo: User) {
+    fun registerUser(userInfo: User, callback: (Boolean) -> Unit) {
 
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserID())
             .set(userInfo, SetOptions.merge())
             .addOnSuccessListener {
-
-                activity.userRegisteredSuccess()
+                callback(true)
             }
             .addOnFailureListener { e ->
-                activity.hideProgressDialog()
+
+                callback(false)
+
                 Log.e(
-                    activity.javaClass.simpleName,
+                    "RegisterUser",
                     "Error writing document",
                     e
                 )
             }
     }
 
-    fun loadUserData(activity: Activity, readBoardsList: Boolean = false) {
+    fun loadUserData(
+        activity: Activity,
+        callback: (Boolean, User?) -> Unit
+    ) {
 
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserID())
@@ -44,30 +49,13 @@ class FirestoreClass {
 
                 val loggedInUser = document.toObject(User::class.java)!!
 
-                when (activity) {
-                    is SignInActivity -> {
-                        activity.signInSuccess(loggedInUser)
-                    }
-                    is MainActivity -> {
-                        activity.updateNavigationUserDetails(loggedInUser, readBoardsList)
-                    }
-                    is MyProfileActivity -> {
-                        activity.setUserDataInUI(loggedInUser)
-                    }
-                }
-            }
+                callback(true, loggedInUser)
+
+             }
             .addOnFailureListener { e ->
-                when (activity) {
-                    is SignInActivity -> {
-                        activity.hideProgressDialog()
-                    }
-                    is MainActivity -> {
-                        activity.hideProgressDialog()
-                    }
-                    is MyProfileActivity -> {
-                        activity.hideProgressDialog()
-                    }
-                }
+
+                callback(false, null)
+
                 Log.e(
                     activity.javaClass.simpleName,
                     "Error while getting loggedIn user details",
@@ -88,6 +76,7 @@ class FirestoreClass {
                     is MainActivity -> {
                         activity.tokenUpdateSuccess()
                     }
+
                     is MyProfileActivity -> {
                         activity.profileUpdateSuccess()
                     }
@@ -98,6 +87,7 @@ class FirestoreClass {
                     is MainActivity -> {
                         activity.hideProgressDialog()
                     }
+
                     is MyProfileActivity -> {
                         activity.hideProgressDialog()
                     }
@@ -158,8 +148,8 @@ class FirestoreClass {
             }
             .addOnFailureListener { e ->
 
-                if(activity.mProgressDialog.isShowing){
-                activity.hideProgressDialog()
+                if (activity.mProgressDialog.isShowing) {
+                    activity.hideProgressDialog()
                 }
                 Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)
             }
